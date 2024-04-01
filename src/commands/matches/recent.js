@@ -312,7 +312,7 @@ module.exports = {
         name: "Match Info",
         value: `Map: ${match.map}\nGame Start Time: ${new Date(
           match.gameStartTime
-        ).toDateString()}\nGame Length: ${millisToMinutesAndSeconds(
+        ).toString()}\nGame Length: ${millisToMinutesAndSeconds(
           match.gameLength
         )}`,
       })
