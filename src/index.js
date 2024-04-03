@@ -3,6 +3,8 @@ const path = require("node:path");
 const { Client, Collection, Events, GatewayIntentBits } = require("discord.js");
 const { token, mongodbUri } = require("../config.json");
 const mongoose = require("mongoose");
+const BotStats = require("./models/BotStats.cjs");
+
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -49,6 +51,25 @@ client.on(Events.InteractionCreate, async (interaction) => {
         } else {
             await interaction.reply({ content: "There was an error while executing this command!", ephemeral: true });
         }
+    }
+
+    // Track command uses in database
+    try {
+        await BotStats.findOneAndUpdate({command: "all"}, {$inc: {uses: 1}}, {upsert: true});
+        let uses = await BotStats.findOne({command: command.data.name});
+
+        if (uses) {
+            await BotStats.findOneAndUpdate({command: command.data.name}, {$inc: {uses: 1}}, {upsert: true});
+        } else {
+            const newCommand = new BotStats({
+                command: command.data.name,
+                uses: 1,
+            });
+
+            await newCommand.save();
+        }
+    } catch (error) {
+        console.log("Error updating command uses in database:\n", error)
     }
 });
 

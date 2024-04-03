@@ -1,0 +1,234 @@
+{
+    "ranks" : [
+        {
+            "id": 0,
+            "name": "Unranked",
+            "emoji": "<:Unranked_Rank:1223346664010551357>"
+        },
+        {
+            "id": 3,
+            "name": "Iron 1",
+            "emoji": "<:Iron_1_Rank:1223345583985660046> "
+        },
+        {
+            "id": 4,
+            "name": "Iron 2",
+            "emoji": "<:Iron_2_Rank:1223345720149671988> "
+        },
+        {
+            "id": 5,
+            "name": "Iron 3",
+            "emoji": "<:Iron_3_Rank:1223345587299029082>"
+        },
+        {
+            "id": 6,
+            "name": "Bronze 1",
+            "emoji": "<:Bronze_1_Rank:1223345750805840024> "
+        },
+        {
+            "id": 7,
+            "name": "Bronze 2",
+            "emoji": "<:Bronze_2_Rank:1223345569343471676>"
+        },
+        {
+            "id": 8,
+            "name": "Bronze 3",
+            "emoji": "<:Bronze_3_Rank:1223345570866008145>"
+        },
+        {
+            "id": 9,
+            "name": "Silver 1",
+            "emoji": "<:Silver_1_Rank:1223345794497773708>"
+        },
+        {
+            "id": 10,
+            "name": "Silver 2",
+            "emoji": "<:Silver_2_Rank:1223345597084336231>"
+        },
+        {
+            "id": 11,
+            "name": "Silver 3",
+            "emoji": "<:Silver_3_Rank:1223345795567190199>"
+        },
+        {
+            "id": 12,
+            "name": "Gold 1",
+            "emoji": "<:Gold_1_Rank:1223345575324418188>"
+        },
+        {
+            "id": 13,
+            "name": "Gold 2",
+            "emoji": "<:Gold_2_Rank:1223345576503017533>"
+        },
+        {
+            "id": 14,
+            "name": "Gold 3",
+            "emoji": "<:Gold_3_Rank:1223345577975222343>"
+        },
+        {
+            "id": 15,
+            "name": "Platinum 1",
+            "emoji": "<:Platinum_1_Rank:1223345894020223026>"
+        },
+        {
+            "id": 16,
+            "name": "Platinum 2",
+            "emoji": "<:Platinum_2_Rank:1223345590486700143>"
+        },
+        {
+            "id": 17,
+            "name": "Platinum 3",
+            "emoji": "<:Platinum_3_Rank:1223345895005884548>"
+        },
+        {
+            "id": 18,
+            "name": "Diamond 1",
+            "emoji": "<:Diamond_1_Rank:1223345571817848893>"
+        },
+        {
+            "id": 19,
+            "name": "Diamond 2",
+            "emoji": "<:Diamond_2_Rank:1223345572912824543>"
+        },
+        {
+            "id": 20,
+            "name": "Diamond 3",
+            "emoji": "<:Diamond_3_Rank:1223345574263128126>"
+        },
+        {
+            "id": 21,
+            "name": "Ascendant 1",
+            "emoji": "<:Ascendant_1_Rank:1223345600666275923>"
+        },
+        {
+            "id": 22,
+            "name": "Ascendant 2",
+            "emoji": "<:Ascendant_2_Rank:1223345994247176372>"
+        },
+        {
+            "id": 23,
+            "name": "Ascendant 3",
+            "emoji": "<:Ascendant_3_Rank:1223345604412051577>"
+        },
+        {
+            "id": 24,
+            "name": "Immortal 1",
+            "emoji": "<:Immortal_1_Rank:1223346029462552618>"
+        },
+        {
+            "id": 25,
+            "name": "Immortal 2",
+            "emoji": "<:Immortal_2_Rank:1223345580441338049>"
+        },
+        {
+            "id": 26,
+            "name": "Immortal 3",
+            "emoji": "<:Immortal_3_Rank:1223346031572418580>"
+        },
+        {
+            "id": 27,
+            "name": "Radiant",
+            "emoji": "<:Radiant_Rank:1223345593733349427>"
+        }
+    ], 
+    "agents": [
+        {
+            "name": "Astra",
+            "emoji": "<:astra:1224754786293907547>"
+        },
+        {
+            "name": "Breach",
+            "emoji": "<:breach:1224755041458720880>"
+        },
+        {
+            "name": "Brimstone",
+            "emoji": "<:brimstone:1224754782699261983>"
+        },
+        {
+            "name": "Chamber",
+            "emoji": "<:chamber:1224755037515939880>"
+        },
+        {
+            "name": "Clove",
+            "emoji": "<:clove:1224754865008545812>"
+        },
+        {
+            "name": "Cypher",
+            "emoji": "<:cypher:1224754793835397242>"
+        },
+        {
+            "name": "Deadlock",
+            "emoji": "<:deadlock:1224755039604838431>"
+        },
+        {
+            "name": "Fade",
+            "emoji": "<:fade:1224755042469413004>"
+        },
+        {
+            "name": "Gekko",
+            "emoji": "<:gekko:1224755043459403896>"
+        },
+        {
+            "name": "Harbor",
+            "emoji": "<:harbor:1224754790353866792>"
+        },
+        {
+            "name": "Iso",
+            "emoji": "<:iso:1224754780631601264>"
+        },
+        {
+            "name": "Jett",
+            "emoji": "<:jett:1224755044575088710>"
+        },
+        {
+            "name": "KAY/O",
+            "emoji": "<:kayo:1224755036584935525>"
+        },
+        {
+            "name": "Killjoy",
+            "emoji": "<:killjoy:1224754791549501530>"
+        },
+        {
+            "name": "Neon",
+            "emoji": "<:neon:1224754805306691594>"
+        },
+        {
+            "name": "Omen",
+            "emoji": "<:omen:1224754866505650298>"
+        },
+        {
+            "name": "Phoenix",
+            "emoji": "<:phoenix:1224754787346677800>"
+        },
+        {
+            "name": "Raze",
+            "emoji": "<:raze:1224755038518247445>"
+        },
+        {
+            "name": "Reyna",
+            "emoji": "<:reyna:1224754798230765579>"
+        },
+        {
+            "name": "Sage",
+            "emoji": "<:sage:1224754863469236224>"
+        },
+        {
+            "name": "Skye",
+            "emoji": "<:skye:1224754794845966500>"
+        },
+        {
+            "name": "Sova",
+            "emoji": "<:sova:1224754792589692979>"
+        },
+        {
+            "name": "Viper",
+            "emoji": "<:viper:1224754789007495218>"
+        },
+        {
+            "name": "Yoru",
+            "emoji": "<:yoru:1224754801976410172>"
+        }
+        
+
+    ]
+}

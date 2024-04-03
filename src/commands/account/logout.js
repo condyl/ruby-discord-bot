@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { riotApiKey } = require("../../../config.json");
-const RiotAccount = require("../../models/RiotAccount");
+const RiotAccount = require("../../models/RiotAccount.cjs");
 
 module.exports = {
     data: new SlashCommandBuilder()
