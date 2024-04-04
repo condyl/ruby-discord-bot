@@ -244,7 +244,7 @@ module.exports = {
             })
             .addFields({
                 name: "Player Stats",
-                value: `Headshot %: ${author.headshotpercentage.toFixed(2)}%\nScore: ${author.score}\nRank: ${author.rank.rankIcon} ${author.rank.rankName}\n[View Full Match History](https://tracker.gg/valorant/match/${match.id})`,
+                value: `Headshot %: ${author.headshotpercentage.toFixed(2)}%\nRank: ${author.rank.rankIcon} ${author.rank.rankName}\n[View Full Match History](https://tracker.gg/valorant/match/${match.id})`,
                 inline: true
             })
 
