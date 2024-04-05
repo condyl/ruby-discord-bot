@@ -68,8 +68,6 @@ module.exports = {
                 return result.data[0];
             });
 
-        let redPlayers = [];
-        let bluePlayers = [];
         let players = [];
         let author;
 
@@ -79,6 +77,7 @@ module.exports = {
             player.name = game.players.all_players[i].name;
             player.tag = game.players.all_players[i].tag;
             player.puuid = game.players.all_players[i].puuid;
+            player.region = game.metadata.region;
             player.tracker = `https://tracker.gg/valorant/profile/riot/${encodeURIComponent(player.name)}%23${encodeURIComponent(player.tag)}/overview`;
             player.isAuthor =
                 `${game.players.all_players[i].name}#${game.players.all_players[i].tag}` ===
@@ -129,18 +128,63 @@ module.exports = {
             if (player.isAuthor) {
                 author = player;
             }
-
-            if (game.players.all_players[i].team.toLowerCase() === "red") {
-                redPlayers.push(player);
-            } else {
-                bluePlayers.push(player);
-            }
+            
             players.push(player);
         }
 
-        redPlayers.sort((a, b) => b.acs - a.acs);
-        bluePlayers.sort((a, b) => b.acs - a.acs);
+        let teamPlayers = [];
+        let enemyPlayers = [];
+
+        for (let i = 0; i < players.length; i++) {
+            if (players[i].team.toLowerCase() === author.team.toLowerCase()) {
+                teamPlayers.push(players[i]);
+            } else {
+                enemyPlayers.push(players[i]);
+            }
+        }
+
+        teamPlayers.sort((a, b) => b.acs - a.acs);
+        enemyPlayers.sort((a, b) => b.acs - a.acs);
         players.sort((a, b) => b.acs - a.acs);
+
+        author.mmr = await fetch(`https://api.henrikdev.xyz/valorant/v1/lifetime/mmr-history/${author.region}/${encodeURIComponent(author.name)}/${encodeURIComponent(author.tag)}?size=1`)
+        .then((response) => response.body)
+        .then((rb) => {
+            const reader = rb.getReader();
+
+            return new ReadableStream({
+                start(controller) {
+                    // The following function handles each data chunk
+                    function push() {
+                        // "done" is a Boolean and value a "Uint8Array"
+                        reader.read().then(({ done, value }) => {
+                            // If there is no more data to read
+                            if (done) {
+                                controller.close();
+                                return;
+                            }
+                            // Get the data and send it to the browser via the controller
+                            controller.enqueue(value);
+                            push();
+                        });
+                    }
+
+                    push();
+                },
+            });
+        })
+        .then((stream) =>
+            // Respond with our stream
+            new Response(stream, { headers: { "Content-Type": "text/html" } }).text()
+        )
+        .then((result) => {
+            // Do things with result
+            result = JSON.parse(result);
+            return {
+                current: result.data[0].ranking_in_tier,
+                change: result.data[0].last_mmr_change
+            }
+        });
 
         let match = {};
         const map = await fetch(`https://valorant-api.com/v1/maps`)
@@ -224,20 +268,20 @@ module.exports = {
             .setTitle(`${match.outcome} | ${match.teamScore} - ${match.enemyScore}`)
             .addFields({
                 name: "Your Team",
-                value: redPlayers
+                value: teamPlayers
                     .map(
                         (player) =>
-                            `${player.rank.rankIcon} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor) ? "**" : ""}`
+                            `${player.rank.rankIcon} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor) ? "\n| " + author.mmr.change + "RR " + author.rank.rankIcon + author.rank.rankName + " " + author.mmr.current + "RR**"  : ""}`
                     )
                     .join("\n"),
                 inline: false,
             })
             .addFields({
                 name: "Enemy Team",
-                value: bluePlayers
+                value: enemyPlayers
                     .map(
                         (player) =>
-                            `${player.rank.rankIcon} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor) ? "**" : ""}`
+                            `${player.rank.rankIcon} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor) ? "\n| " + author.mmr.change + "RR " + author.rank.rankIcon + author.rank.rankName + " " + author.mmr.current + "RR**"  : ""}`
                     )
                     .join("\n"),
                 inline: false,
@@ -245,7 +289,7 @@ module.exports = {
             .addFields({
                 name: "Player Stats",
                 value: `Headshot %: ${author.headshotpercentage.toFixed(2)}%\nRank: ${author.rank.rankIcon} ${author.rank.rankName}\n[View Full Match History](https://tracker.gg/valorant/match/${match.id})`,
-                inline: true
+                inline: false
             })
 
             
