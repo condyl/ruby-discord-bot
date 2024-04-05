@@ -222,7 +222,7 @@ module.exports = {
             embeds[i]
             .setColor(embedInfo.color)
             .setAuthor({
-                name: `${author.agent.agentName} | ${author.placeStatus}${author.place} | ${author.acs} ACS`,
+                name: `${author.agent.agentName} | ${author.place} | ${author.acs} ACS`,
                 iconURL: author.agent.icon,
                 url: `https://tracker.gg/valorant/match/${match.id}`
             })
