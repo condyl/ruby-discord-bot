@@ -19,7 +19,7 @@ module.exports = {
         try {
             user = await RiotAccount.findOne(query);
             if (user) {
-                console.log("User found.  Checking match history.");
+                console.log("User found.  Checking recent match.");
                 // find user
             } else {
                 console.log("User not in database.");
@@ -237,7 +237,7 @@ module.exports = {
         match.teamScore = author.team.toLowerCase() === "red" ? game.teams.red.rounds_won : game.teams.blue.rounds_won;
         match.enemyScore = author.team.toLowerCase() === "red" ? game.teams.blue.rounds_won : game.teams.red.rounds_won;
         if (match.teamScore > match.enemyScore) {
-            match.outcome = "Win";
+            match.outcome = "Victory";
         } else if (match.enemyScore > match.teamScore) {
             match.outcome = "Defeat";
         } else {
@@ -250,7 +250,7 @@ module.exports = {
             yellow: 0xcbb765,
         };
         let embedInfo = {};
-        if (match.outcome === "Win") {
+        if (match.outcome === "Victory") {
             embedInfo.color = colors.green;
         } else if (match.outcome === "Defeat") {
             embedInfo.color = colors.red;
