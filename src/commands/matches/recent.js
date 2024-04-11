@@ -70,6 +70,8 @@ module.exports = {
 
         let players = [];
         let author;
+        let parties = [];
+        let partyEmojis = ["🔵", "🟢", "🟡", "🟣", "🔴", "🟠", "🟤", "⚪", "⚫", "⭕"];
 
         // get players from the game
         for (let i = 0; i < game.players.all_players.length; i++) {
@@ -92,7 +94,15 @@ module.exports = {
                 Math.round(game.players.all_players[i].stats.score / game.rounds.length) >= 300 ? " :fire:" : "";
             player.score = game.players.all_players[i].stats.score;
             player.team = game.players.all_players[i].team;
-            player.partyId = game.players.all_players[i].partyId;
+            if (!parties.includes(game.players.all_players[i].party_id)) {
+                parties.push(game.players.all_players[i].party_id);
+            }
+            for (let j = 0; j < parties.length; j++) {
+                if (parties[j] === game.players.all_players[i].party_id) {
+                    player.partyEmoji = partyEmojis[j];
+                    break;
+                }
+            }
             player.shots = {
                 head: game.players.all_players[i].stats.headshots,
                 body: game.players.all_players[i].stats.bodyshots,
@@ -232,7 +242,6 @@ module.exports = {
         match.mapimage = map.listViewIcon;
         match.id = game.metadata.matchid;
         match.gamemode = game.metadata.mode;
-        console.log(match.gamemode);
         match.gameStartTime = game.metadata.game_start;
         match.gameLength = game.metadata.game_length;
         match.teamScore = author.team.toLowerCase() === "red" ? game.teams.red.rounds_won : game.teams.blue.rounds_won;
@@ -272,7 +281,7 @@ module.exports = {
                 value: teamPlayers
                     .map(
                         (player) =>
-                            `${(match.gamemode === "Competitive") ? player.rank.rankIcon : ""} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor && match.gamemode === "Competitive") ? "\n| " + author.mmr.change + "RR " + author.rank.rankIcon + author.rank.rankName + " " + author.mmr.current + "RR**"  : ""} ${(player.isAuthor && match.gamemode !== "Competitive") ? "**"  : ""}`
+                            `${player.partyEmoji} ${(match.gamemode === "Competitive") ? player.rank.rankIcon : ""} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor && match.gamemode === "Competitive") ? "\n| " + author.mmr.change + "RR " + author.rank.rankIcon + author.rank.rankName + " " + author.mmr.current + "RR**"  : ""} ${(player.isAuthor && match.gamemode !== "Competitive") ? "**"  : ""}`
                     )
                     .join("\n"),
                 inline: false,
@@ -282,7 +291,7 @@ module.exports = {
                 value: enemyPlayers
                     .map(
                         (player) =>
-                            `${(match.gamemode === "Competitive") ? player.rank.rankIcon : ""} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor) ? "\n| " + author.mmr.change + "RR " + author.rank.rankIcon + author.rank.rankName + " " + author.mmr.current + "RR**"  : ""}`
+                            `${player.partyEmoji} ${(match.gamemode === "Competitive") ? player.rank.rankIcon : ""} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor) ? "\n| " + author.mmr.change + "RR " + author.rank.rankIcon + author.rank.rankName + " " + author.mmr.current + "RR**"  : ""}`
                     )
                     .join("\n"),
                 inline: false,
