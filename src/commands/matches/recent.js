@@ -68,10 +68,14 @@ module.exports = {
                 return result.data[0];
             });
 
+
         let players = [];
         let author;
         let parties = [];
-        let partyEmojis = ["🔵", "🟢", "🟡", "🟣", "🔴", "🟠", "🟤", "⚪", "⚫", "⭕"];
+        let partyEmojis = ["🔵", "🟢", "🟡", "🟣", "🔴", "🟠", "🟤", "⚪", "⚫", "⭕", "🟥", "🟦", ];
+
+        let match = {};
+        match.gamemode = game.metadata.mode;
 
         // get players from the game
         for (let i = 0; i < game.players.all_players.length; i++) {
@@ -93,7 +97,12 @@ module.exports = {
             player.acsStatus =
                 Math.round(game.players.all_players[i].stats.score / game.rounds.length) >= 300 ? " :fire:" : "";
             player.score = game.players.all_players[i].stats.score;
-            player.team = game.players.all_players[i].team;
+
+            if (match.gamemode !== "Deathmatch") {
+                player.team = game.players.all_players[i].team;
+            }
+
+
             if (!parties.includes(game.players.all_players[i].party_id)) {
                 parties.push(game.players.all_players[i].party_id);
             }
@@ -142,61 +151,71 @@ module.exports = {
             players.push(player);
         }
 
-        let teamPlayers = [];
-        let enemyPlayers = [];
-
-        for (let i = 0; i < players.length; i++) {
-            if (players[i].team.toLowerCase() === author.team.toLowerCase()) {
-                teamPlayers.push(players[i]);
-            } else {
-                enemyPlayers.push(players[i]);
+        if (match.gamemode !== "Deathmatch") {
+            let teamPlayers = [];
+            let enemyPlayers = [];
+            for (let i = 0; i < players.length; i++) {
+                if (players[i].team.toLowerCase() === author.team.toLowerCase()) {
+                    teamPlayers.push(players[i]);
+                } else {
+                    enemyPlayers.push(players[i]);
+                } 
             }
+            teamPlayers.sort((a, b) => b.acs - a.acs);
+            enemyPlayers.sort((a, b) => b.acs - a.acs);
         }
-
-        teamPlayers.sort((a, b) => b.acs - a.acs);
-        enemyPlayers.sort((a, b) => b.acs - a.acs);
         players.sort((a, b) => b.acs - a.acs);
 
-        author.mmr = await fetch(`https://api.henrikdev.xyz/valorant/v1/lifetime/mmr-history/${author.region}/${encodeURIComponent(author.name)}/${encodeURIComponent(author.tag)}?size=1`)
-        .then((response) => response.body)
-        .then((rb) => {
-            const reader = rb.getReader();
+        let players1;
+        let players2;
+        if (match.gamemode === "Deathmatch") {
+            players1 = players.slice(0, 6);
+            players2 = players.slice(6, 12);
+        }
+        
 
-            return new ReadableStream({
-                start(controller) {
-                    // The following function handles each data chunk
-                    function push() {
-                        // "done" is a Boolean and value a "Uint8Array"
-                        reader.read().then(({ done, value }) => {
-                            // If there is no more data to read
-                            if (done) {
-                                controller.close();
-                                return;
-                            }
-                            // Get the data and send it to the browser via the controller
-                            controller.enqueue(value);
-                            push();
-                        });
-                    }
+        if (match.gamemode === "Competitive") {
+            author.mmr = await fetch(`https://api.henrikdev.xyz/valorant/v1/lifetime/mmr-history/${author.region}/${encodeURIComponent(author.name)}/${encodeURIComponent(author.tag)}?size=1`)
+            .then((response) => response.body)
+            .then((rb) => {
+                const reader = rb.getReader();
 
-                    push();
-                },
+                return new ReadableStream({
+                    start(controller) {
+                        // The following function handles each data chunk
+                        function push() {
+                            // "done" is a Boolean and value a "Uint8Array"
+                            reader.read().then(({ done, value }) => {
+                                // If there is no more data to read
+                                if (done) {
+                                    controller.close();
+                                    return;
+                                }
+                                // Get the data and send it to the browser via the controller
+                                controller.enqueue(value);
+                                push();
+                            });
+                        }
+
+                        push();
+                    },
+                });
+            })
+            .then((stream) =>
+                // Respond with our stream
+                new Response(stream, { headers: { "Content-Type": "text/html" } }).text()
+            )
+            .then((result) => {
+                // Do things with result
+                result = JSON.parse(result);
+                return {
+                    current: result.data[0].ranking_in_tier,
+                    change: result.data[0].last_mmr_change
+                }
             });
-        })
-        .then((stream) =>
-            // Respond with our stream
-            new Response(stream, { headers: { "Content-Type": "text/html" } }).text()
-        )
-        .then((result) => {
-            // Do things with result
-            result = JSON.parse(result);
-            return {
-                current: result.data[0].ranking_in_tier,
-                change: result.data[0].last_mmr_change
-            }
-        });
+        }
 
-        let match = {};
+        
         const map = await fetch(`https://valorant-api.com/v1/maps`)
             .then((response) => response.body)
             .then((rb) => {
@@ -241,17 +260,24 @@ module.exports = {
         match.map = map.displayName;
         match.mapimage = map.listViewIcon;
         match.id = game.metadata.matchid;
-        match.gamemode = game.metadata.mode;
         match.gameStartTime = game.metadata.game_start;
         match.gameLength = game.metadata.game_length;
-        match.teamScore = author.team.toLowerCase() === "red" ? game.teams.red.rounds_won : game.teams.blue.rounds_won;
-        match.enemyScore = author.team.toLowerCase() === "red" ? game.teams.blue.rounds_won : game.teams.red.rounds_won;
-        if (match.teamScore > match.enemyScore) {
-            match.outcome = "Victory";
-        } else if (match.enemyScore > match.teamScore) {
-            match.outcome = "Defeat";
+        if (match.gamemode !== "Deathmatch") {
+            match.teamScore = author.team.toLowerCase() === "red" ? game.teams.red.rounds_won : game.teams.blue.rounds_won;
+            match.enemyScore = author.team.toLowerCase() === "red" ? game.teams.blue.rounds_won : game.teams.red.rounds_won;
+            if (match.teamScore > match.enemyScore) {
+                match.outcome = "Victory";
+            } else if (match.enemyScore > match.teamScore) {
+                match.outcome = "Defeat";
+            } else {
+                match.outcome = "Draw";
+            }
         } else {
-            match.outcome = "Draw";
+            if (players[0] === author) {
+                match.outcome = "Victory";
+            } else {
+                match.outcome = "Defeat";
+            }
         }
 
         let colors = {
@@ -268,41 +294,79 @@ module.exports = {
             embedInfo.color = colors.yellow;
         }
 
-        const embed = new EmbedBuilder()
+        let embed;
+        if (match.gamemode !== "Deathmatch") {
+            embed = new EmbedBuilder()
+                .setColor(embedInfo.color)
+                .setAuthor({
+                    name: "Tracker",
+                    iconURL: author.agent.icon,
+                    url: `https://tracker.gg/valorant/match/${match.id}`,
+                })
+                .setTitle(`${match.outcome} | ${match.teamScore} - ${match.enemyScore}`)
+                .addFields({
+                    name: "Your Team",
+                    value: teamPlayers
+                        .map(
+                            (player) =>
+                                `${player.partyEmoji} ${(match.gamemode === "Competitive") ? player.rank.rankIcon : ""} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor && match.gamemode === "Competitive") ? "\n| " + author.mmr.change + "RR " + author.rank.rankIcon + author.rank.rankName + " " + author.mmr.current + "RR**"  : ""} ${(player.isAuthor && match.gamemode !== "Competitive") ? "**"  : ""}`
+                        )
+                        .join("\n"),
+                    inline: false,
+                })
+                .addFields({
+                    name: "Enemy Team",
+                    value: enemyPlayers
+                        .map(
+                            (player) =>
+                                `${player.partyEmoji} ${(match.gamemode === "Competitive") ? player.rank.rankIcon : ""} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor) ? "\n| " + author.mmr.change + "RR " + author.rank.rankIcon + author.rank.rankName + " " + author.mmr.current + "RR**"  : ""}`
+                        )
+                        .join("\n"),
+                    inline: false,
+                })
+                .addFields({
+                    name: "Player Stats",
+                    value: `Headshot %: ${author.headshotpercentage.toFixed(2)}%\nRank: ${author.rank.rankIcon} ${author.rank.rankName}\n[View Full Match History](https://tracker.gg/valorant/match/${match.id})`,
+                    inline: false
+                })
+    
+                
+                .addFields({
+                    name: "Match Info",
+                    value: `Map: ${match.map}\nGame Start Time: <t:${match.gameStartTime}:F>
+                    Game Length: ${secondsToMinutesAndSeconds(match.gameLength)}
+                    Gamemode: ${match.gamemode}`,
+                })
+                .setImage(match.mapimage);
+        } else {
+            embed = new EmbedBuilder()
             .setColor(embedInfo.color)
             .setAuthor({
                 name: "Tracker",
                 iconURL: author.agent.icon,
                 url: `https://tracker.gg/valorant/match/${match.id}`,
             })
-            .setTitle(`${match.outcome} | ${match.teamScore} - ${match.enemyScore}`)
+            .setTitle(`${match.outcome} | ${(match.outcome === "Victory") ? author.kills + " - " + players[1].kills : players[0].kills + " - " + author.kills}`)
             .addFields({
-                name: "Your Team",
-                value: teamPlayers
+                name: "Players",
+                value: players1
                     .map(
                         (player) =>
-                            `${player.partyEmoji} ${(match.gamemode === "Competitive") ? player.rank.rankIcon : ""} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor && match.gamemode === "Competitive") ? "\n| " + author.mmr.change + "RR " + author.rank.rankIcon + author.rank.rankName + " " + author.mmr.current + "RR**"  : ""} ${(player.isAuthor && match.gamemode !== "Competitive") ? "**"  : ""}`
+                            `${player.partyEmoji} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor) ? "**"  : ""}`
                     )
                     .join("\n"),
                 inline: false,
             })
             .addFields({
-                name: "Enemy Team",
-                value: enemyPlayers
+                name: "\u200b",
+                value: players2
                     .map(
                         (player) =>
-                            `${player.partyEmoji} ${(match.gamemode === "Competitive") ? player.rank.rankIcon : ""} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor) ? "\n| " + author.mmr.change + "RR " + author.rank.rankIcon + author.rank.rankName + " " + author.mmr.current + "RR**"  : ""}`
+                            `${player.partyEmoji} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor) ? "**"  : ""}`
                     )
                     .join("\n"),
                 inline: false,
             })
-            .addFields({
-                name: "Player Stats",
-                value: `Headshot %: ${author.headshotpercentage.toFixed(2)}%\nRank: ${author.rank.rankIcon} ${author.rank.rankName}\n[View Full Match History](https://tracker.gg/valorant/match/${match.id})`,
-                inline: false
-            })
-
-            
             .addFields({
                 name: "Match Info",
                 value: `Map: ${match.map}\nGame Start Time: <t:${match.gameStartTime}:F>
@@ -310,6 +374,7 @@ module.exports = {
                 Gamemode: ${match.gamemode}`,
             })
             .setImage(match.mapimage);
+        }
 
         interaction.editReply({ embeds: [embed] });
     },
