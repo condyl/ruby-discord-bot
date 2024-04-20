@@ -151,9 +151,9 @@ module.exports = {
             players.push(player);
         }
 
+        let teamPlayers = [];
+        let enemyPlayers = [];
         if (match.gamemode !== "Deathmatch") {
-            let teamPlayers = [];
-            let enemyPlayers = [];
             for (let i = 0; i < players.length; i++) {
                 if (players[i].team.toLowerCase() === author.team.toLowerCase()) {
                     teamPlayers.push(players[i]);
@@ -309,9 +309,9 @@ module.exports = {
                     value: teamPlayers
                         .map(
                             (player) =>
-                                `${player.partyEmoji} ${(match.gamemode === "Competitive") ? player.rank.rankIcon : ""} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor && match.gamemode === "Competitive") ? "\n| " + author.mmr.change + "RR " + author.rank.rankIcon + author.rank.rankName + " " + author.mmr.current + "RR**"  : ""} ${(player.isAuthor && match.gamemode !== "Competitive") ? "**"  : ""}`
+                                `${(player === teamPlayers[0]) ? "" : "\u200B\n"} ${player.partyEmoji} ${(match.gamemode === "Competitive") ? player.rank.rankIcon : ""} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor && match.gamemode === "Competitive") ? "\n| " + author.mmr.change + "RR " + author.rank.rankIcon + author.rank.rankName + " " + author.mmr.current + "RR**"  : ""} ${(player.isAuthor && match.gamemode !== "Competitive") ? "**"  : ""}`
                         )
-                        .join("\n"),
+                        .join(""),
                     inline: false,
                 })
                 .addFields({
@@ -319,9 +319,9 @@ module.exports = {
                     value: enemyPlayers
                         .map(
                             (player) =>
-                                `${player.partyEmoji} ${(match.gamemode === "Competitive") ? player.rank.rankIcon : ""} ${player.agent.agentEmoji} ${(player.isAuthor) ? "**" : ""} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists} ${(player.isAuthor) ? "\n| " + author.mmr.change + "RR " + author.rank.rankIcon + author.rank.rankName + " " + author.mmr.current + "RR**"  : ""}`
+                                `${(player === enemyPlayers[0]) ? "" : "\u200B\n"} ${player.partyEmoji} ${(match.gamemode === "Competitive") ? player.rank.rankIcon : ""} ${player.agent.agentEmoji} [${player.name + "#" + player.tag}](${player.tracker}) [${player.acs}${player.acsStatus}] - ${player.kills}/${player.deaths}/${player.assists}`
                         )
-                        .join("\n"),
+                        .join(""),
                     inline: false,
                 })
                 .addFields({
@@ -333,9 +333,7 @@ module.exports = {
                 
                 .addFields({
                     name: "Match Info",
-                    value: `Map: ${match.map}\nGame Start Time: <t:${match.gameStartTime}:F>
-                    Game Length: ${secondsToMinutesAndSeconds(match.gameLength)}
-                    Gamemode: ${match.gamemode}`,
+                    value: `Map: ${match.map}\nGame Start Time: <t:${match.gameStartTime}:F>\nGame Length: ${secondsToMinutesAndSeconds(match.gameLength)}\nGamemode: ${match.gamemode}`,
                 })
                 .setImage(match.mapimage);
         } else {
