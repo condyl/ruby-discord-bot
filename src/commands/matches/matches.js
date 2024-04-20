@@ -88,7 +88,6 @@ module.exports = {
                     author.kills = games[i].players.all_players[j].stats.kills;
                     author.deaths = games[i].players.all_players[j].stats.deaths;
                     author.assists = games[i].players.all_players[j].stats.assists;
-                    console.log(author.kills, author.deaths, author.assists);
                     author.acs = Math.round(
                         games[i].players.all_players[j].stats.score / games[i].rounds.length
                     );
