@@ -2,6 +2,6 @@
     "token": "DISCORD_BOT_TOKEN",
     "clientId": "DISCORD_BOT_ID",
     "guildId": "DEV_GUILD_ID",
-    "riotApiKey": "RIOT_API_KEY",
+    "HenrikApiKey": "HENRIK_API_KEY",
     "mongodbUri": "MONGO_DB_URI"
 }

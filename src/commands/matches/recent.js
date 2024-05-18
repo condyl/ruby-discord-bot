@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { riotApiKey } = require("../../../config.json");
+const { HenrikApiKey } = require("../../../config.json");
 const RiotAccount = require("../../models/RiotAccount.cjs");
 const { ranks, agents } = require("../../../game-content.json");
 const { EmbedBuilder } = require("discord.js");
@@ -31,7 +31,7 @@ module.exports = {
             return;
         }
 
-        const requestURL = `https://api.henrikdev.xyz/valorant/v3/by-puuid/matches/${user.region}/${user.puuid}?size=1`;
+        const requestURL = `https://api.henrikdev.xyz/valorant/v3/by-puuid/matches/${user.region}/${user.puuid}?size=1?api_key=${HenrikApiKey}`;
         let game = await fetch(requestURL)
             .then((response) => response.body)
             .then((rb) => {
@@ -65,9 +65,17 @@ module.exports = {
             .then((result) => {
                 // Do things with result
                 result = JSON.parse(result);
+                
+                if (result.status === 400) {
+                    return result.status;
+                }
                 return result.data[0];
             });
 
+        if (game === 400) {
+            await interaction.editReply(`**ERROR:** API is down, please try again later.`);
+            return;
+        }
 
         let players = [];
         let author;
@@ -175,7 +183,7 @@ module.exports = {
         
 
         if (match.gamemode === "Competitive") {
-            author.mmr = await fetch(`https://api.henrikdev.xyz/valorant/v1/lifetime/mmr-history/${author.region}/${encodeURIComponent(author.name)}/${encodeURIComponent(author.tag)}?size=1`)
+            author.mmr = await fetch(`https://api.henrikdev.xyz/valorant/v1/lifetime/mmr-history/${author.region}/${encodeURIComponent(author.name)}/${encodeURIComponent(author.tag)}?size=1?api_key=${HenrikApiKey}`)
             .then((response) => response.body)
             .then((rb) => {
                 const reader = rb.getReader();

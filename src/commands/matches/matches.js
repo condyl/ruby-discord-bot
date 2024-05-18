@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { riotApiKey } = require("../../../config.json");
+const { HenrikApiKey } = require("../../../config.json");
 const RiotAccount = require("../../models/RiotAccount.cjs");
 const { ranks, agents } = require("../../../game-content.json");
 const { EmbedBuilder } = require("discord.js");
@@ -31,7 +31,7 @@ module.exports = {
             return;
         }
 
-        const requestURL = `https://api.henrikdev.xyz/valorant/v3/by-puuid/matches/${user.region}/${user.puuid}?size=5`;
+        const requestURL = `https://api.henrikdev.xyz/valorant/v3/by-puuid/matches/${user.region}/${user.puuid}?apikey=${HenrikApiKey}?size=5`;
         let games = await fetch(requestURL)
             .then((response) => response.body)
             .then((rb) => {

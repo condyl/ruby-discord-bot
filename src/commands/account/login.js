@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { riotApiKey } = require("../../../config.json");
+const { HenrikApiKey } = require("../../../config.json");
 const RiotAccount = require("../../models/RiotAccount.cjs");
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
         const riotName = interaction.options.getString("riot_name");
         const riotTag = interaction.options.getString("riot_tag");
 
-        const requestURL = `https://api.henrikdev.xyz/valorant/v1/account/${riotName}/${riotTag}`;
+        const requestURL = `https://api.henrikdev.xyz/valorant/v1/account/${riotName}/${riotTag}?apikey=${HenrikApiKey}`;
 
         let account = await fetch(requestURL)
             .then((response) => response.body)
