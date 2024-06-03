@@ -31,7 +31,7 @@ module.exports = {
             return;
         }
 
-        const requestURL = `https://api.henrikdev.xyz/valorant/v3/by-puuid/matches/${user.region}/${user.puuid}?apikey=${HenrikApiKey}?size=5`;
+        const requestURL = `https://api.henrikdev.xyz/valorant/v3/by-puuid/matches/${user.region}/${user.puuid}?size=5&api_key=${HenrikApiKey}`;
         let games = await fetch(requestURL)
             .then((response) => response.body)
             .then((rb) => {
