@@ -31,7 +31,7 @@ module.exports = {
             return;
         }
 
-        const requestURL = `https://api.henrikdev.xyz/valorant/v3/by-puuid/matches/${user.region}/${user.puuid}?size=1?api_key=${HenrikApiKey}`;
+        const requestURL = `https://api.henrikdev.xyz/valorant/v3/by-puuid/matches/${user.region}/${user.puuid}?size=1&api_key=${HenrikApiKey}`;
         let game = await fetch(requestURL)
             .then((response) => response.body)
             .then((rb) => {
@@ -65,7 +65,6 @@ module.exports = {
             .then((result) => {
                 // Do things with result
                 result = JSON.parse(result);
-                
                 if (result.status === 400) {
                     return result.status;
                 }
@@ -183,7 +182,7 @@ module.exports = {
         
 
         if (match.gamemode === "Competitive") {
-            author.mmr = await fetch(`https://api.henrikdev.xyz/valorant/v1/lifetime/mmr-history/${author.region}/${encodeURIComponent(author.name)}/${encodeURIComponent(author.tag)}?size=1?api_key=${HenrikApiKey}`)
+            author.mmr = await fetch(`https://api.henrikdev.xyz/valorant/v1/lifetime/mmr-history/${author.region}/${encodeURIComponent(author.name)}/${encodeURIComponent(author.tag)}?size=1&api_key=${HenrikApiKey}`)
             .then((response) => response.body)
             .then((rb) => {
                 const reader = rb.getReader();
